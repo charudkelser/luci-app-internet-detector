@@ -1,4 +1,4 @@
-name: Build OpenWrt Package
+name: Build IPK
 
 on:
   push:
@@ -8,18 +8,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Build Package
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create IPK package
         run: |
-          # Ini adalah perintah sederhana untuk meniru proses build
-          # Biasanya memerlukan OpenWrt Buildroot, tapi untuk paket sederhana
-          # Akang bisa menggunakan tar untuk membungkusnya menjadi .ipk
-          tar -cvzf data.tar.gz -C internet-detector-mod-whatsapp/data .
-          tar -cvzf control.tar.gz -C internet-detector-mod-whatsapp/luci .
-          echo "1.0" > debian-binary
-          ar rv internet-detector-mod-whatsapp_1.0.0_all.ipk debian-binary control.tar.gz data.tar.gz
-      - name: Upload Artifact
+          # Membuat struktur kontrol untuk paket
+          mkdir -p build/CONTROL
+          cat <<EOF > build/CONTROL/control
+          Package: internet-detector-mod-whatsapp
+          Version: 1.0.0
+          Section: net
+          Architecture: all
+          Maintainer: Akang
+          Depends: internet-detector, curl
+          Description: Modul WhatsApp untuk Internet Detector
+          EOF
+
+          # Menyalin data modul
+          mkdir -p build/usr/lib/lua/internet-detector/modules
+          cp internet-detector-mod-whatsapp/data/usr/lib/lua/internet-detector/modules/mod_whatsapp.lua build/usr/lib/lua/internet-detector/modules/
+
+          # Membuat file .ipk
+          tar -czC build . > data.tar.gz
+          tar -czC internet-detector-mod-whatsapp/data/CONTROL . > control.tar.gz # Sesuaikan path jika perlu
+          # (Atau cara sederhana, kita bungkus folder utama)
+          tar -cvzf internet-detector-mod-whatsapp_1.0.0_all.ipk -C internet-detector-mod-whatsapp .
+
+      - name: Upload IPK
         uses: actions/upload-artifact@v3
         with:
-          name: package
+          name: internet-detector-mod-whatsapp-ipk
           path: internet-detector-mod-whatsapp_1.0.0_all.ipk
