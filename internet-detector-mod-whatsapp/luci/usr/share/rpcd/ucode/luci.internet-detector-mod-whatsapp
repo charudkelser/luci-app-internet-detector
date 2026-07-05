@@ -1,1 +1,24 @@
+'use strict';
 
+import { popen } from 'fs';
+
+const methods = {
+	GetWaInfo: {
+		args: {
+			apiKey    : 'String',
+			phoneNumber: 'String',
+		},
+		call: function(request) {
+			const apiKey = request.args?.apiKey;
+			const phone = request.args?.phoneNumber;
+			
+			if(apiKey && phone) {
+				return { ok: true, message: 'Configuration valid' };
+			} else {
+				return { ok: false, message: 'Missing API Key or Phone Number' };
+			}
+		},
+	},
+};
+
+return { 'luci.internet-detector-mod-whatsapp': methods };
