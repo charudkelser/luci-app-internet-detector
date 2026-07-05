@@ -16,14 +16,14 @@ jobs:
 
       - name: Build IPK
         run: |
-          # Buat direktori kerja
+          # 1. Siapkan struktur direktori
           mkdir -p ipk/CONTROL
           mkdir -p ipk/usr/lib/lua/internet-detector/modules/
           
-          # Salin file modul
+          # 2. Salin file modul
           cp internet-detector-mod-whatsapp/data/usr/lib/lua/internet-detector/modules/mod_whatsapp.lua ipk/usr/lib/lua/internet-detector/modules/
           
-          # Buat file control yang benar
+          # 3. Buat file control
           cat <<EOF > ipk/CONTROL/control
           Package: internet-detector-mod-whatsapp
           Version: 1.0.0
@@ -33,8 +33,12 @@ jobs:
           Description: Modul WhatsApp untuk Internet Detector
           EOF
           
-          # Membuat file .ipk dengan format yang benar (tar)
-          cd ipk && tar -czvf ../internet-detector-mod-whatsapp_1.0.0_all.ipk .
+          # 4. Buat paket menggunakan format ar (standar opkg)
+          cd ipk
+          tar -czf control.tar.gz -C CONTROL .
+          tar -czf data.tar.gz --exclude=./CONTROL .
+          echo "2.0" > debian-binary
+          ar -r ../internet-detector-mod-whatsapp_1.0.0_all.ipk debian-binary control.tar.gz data.tar.gz
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
