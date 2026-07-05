@@ -16,15 +16,15 @@ jobs:
 
       - name: Build IPK
         run: |
-          # 1. Buat struktur folder paket
-          mkdir -p package/usr/lib/lua/internet-detector/modules/
+          # Buat direktori kerja
+          mkdir -p ipk/CONTROL
+          mkdir -p ipk/usr/lib/lua/internet-detector/modules/
           
-          # 2. Salin file modul ke folder paket
-          cp internet-detector-mod-whatsapp/data/usr/lib/lua/internet-detector/modules/mod_whatsapp.lua package/usr/lib/lua/internet-detector/modules/
+          # Salin file modul
+          cp internet-detector-mod-whatsapp/data/usr/lib/lua/internet-detector/modules/mod_whatsapp.lua ipk/usr/lib/lua/internet-detector/modules/
           
-          # 3. Buat file control (wajib ada untuk .ipk)
-          mkdir -p package/CONTROL
-          cat <<EOF > package/CONTROL/control
+          # Buat file control yang benar
+          cat <<EOF > ipk/CONTROL/control
           Package: internet-detector-mod-whatsapp
           Version: 1.0.0
           Section: net
@@ -33,10 +33,10 @@ jobs:
           Description: Modul WhatsApp untuk Internet Detector
           EOF
           
-          # 4. Bungkus menjadi file .ipk menggunakan tar
-          cd package && tar -czvf ../internet-detector-mod-whatsapp_1.0.0_all.ipk .
-
-      - name: Upload IPK
+          # Membuat file .ipk dengan format yang benar (tar)
+          cd ipk && tar -czvf ../internet-detector-mod-whatsapp_1.0.0_all.ipk .
+          
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: internet-detector-mod-whatsapp
