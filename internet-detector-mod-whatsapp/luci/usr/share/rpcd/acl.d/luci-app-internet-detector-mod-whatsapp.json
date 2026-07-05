@@ -1,1 +1,10 @@
-
+{
+	"luci-app-internet-detector-mod-whatsapp": {
+		"description": "Grant access to internet-detector-mod-whatsapp procedures",
+		"read": {
+			"ubus": {
+				"luci.internet-detector-mod-whatsapp": [ "GetWaInfo" ]
+			}
+		}
+	}
+}
